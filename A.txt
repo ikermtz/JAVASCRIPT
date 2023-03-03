@@ -1,0 +1,86 @@
+
+define(['N/record'], // 'N/record' //  use N/record Module APIs to create a  record (record.create) and set values (newTask.setValue) on the record.
+function (n_record) 
+{
+    function onAction(context) 
+    {
+        log.debug({title: 'Inicio ejecución ejercicio2'});
+       
+        var saldoInicial = 100;
+
+         var newrecord = context.newRecord;
+        newrecord.setValue({
+            fieldId: 'custrecord_ai_usu_saldo',
+            value: saldoInicial
+        });
+
+        var id = newrecord.getValue({
+            fieldId: 'id'
+        });
+
+
+        log.debug({ title: 'Internal ID', 
+                    details: id
+        });
+
+        /*
+        var value = newrecord.getValue({fieldId: 'custrecord_ai_usu_saldo'});
+        log.debug({title: value}); */
+
+        // creamos un nuevo registro en el custom record ARIN - Movimientos:
+        var newMovimento = n_record.create({
+            type: 'customrecord_ai_tb_movimientos',  //'customrecord_ai_tb_movimientos'
+            isDynamic: true
+        });
+
+        // damos valores a todos los fields del nuevo registro:
+        newMovimento.setValue({
+            fieldId: 'custrecord_ai_movi_tipodemovimiento',
+            value: 1
+        });
+
+        newMovimento.setValue({
+            fieldId: 'custrecord_ai_movi_concepto',
+            value:'Bonificación de nuevo usuario'
+        });
+        
+        newMovimento.setValue({
+            fieldId: 'custrecord_ai_movi_importe',
+            value: saldoInicial
+        });
+
+        newMovimento.setValue({
+            fieldId: 'custrecord_ai_movi_fecha',
+            value: new Date()
+        });
+
+        newMovimento.setValue({
+            fieldId: 'custrecord_ai_movi_idusuario',
+            value: id
+        });
+        
+
+
+        try {
+            var newMovimentoId = newMovimento.save();
+            log.debug({    
+                title: 'Movimiento record created successfully', 
+                details: 'New movimiento record ID:  ' + newMovimentoId
+            });
+         } catch (e) {
+             log.error({
+                title: e.name,
+                details: e.message
+             });
+        }
+
+
+        log.debug({title: 'Fin ejecución nombreScript'});
+    }
+
+    return {
+        onAction: onAction
+    };
+
+}
+);
